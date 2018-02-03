@@ -3,6 +3,7 @@
  * E-mail: jerome.renaux@gmail.com
  */
 
+var myId = null;
 var Game = {};
 
 Game.init = function(){
@@ -17,6 +18,7 @@ Game.preload = function() {
 
 Game.create = function(){
     Game.playerMap = {};
+    game.physics.startSystem(Phaser.Physics.P2JS);
     var testKey = game.input.keyboard.addKey(Phaser.Keyboard.Up);
     testKey.onDown.add(Client.sendTest, this);
     var map = game.add.tilemap('map');
@@ -28,19 +30,36 @@ Game.create = function(){
     }
     layer.inputEnabled = true; // Allows clicking on the map ; it's enough to do it on the last layer
     layer.events.onInputUp.add(Game.getCoordinates, this);
+
     Client.askNewPlayer();
 };
 
 Game.update = function(){
+
+    if(myId == null || !Game.playerMap[myId]) {
+        return;
+    }
+    sprite = Game.playerMap[myId];
+
+    sprite.body.setZeroVelocity();
+    var velocity = 200;
+
     if (cursors.left.isDown)
     {
-        Client.sendTest()
-        console.log('hi')
+        sprite.body.moveLeft(velocity);
     }
     else if (cursors.right.isDown)
     {
-        Client.sendTest()
-        console.log('hi2')
+        sprite.body.moveRight(velocity);
+    }
+
+    if (cursors.up.isDown)
+    {
+        sprite.body.moveUp(velocity);
+    }
+    else if (cursors.down.isDown)
+    {
+        sprite.body.moveDown(velocity);
     }
 }
 

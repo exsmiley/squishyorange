@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jchoi614/squishyorange#readme",
   "dependencies": {
     "express": "^4.16.2",
+    "p2": "^0.7.1",
     "phaser-ce": "^2.10.0",
     "socket.io": "^2.0.4"
   }
