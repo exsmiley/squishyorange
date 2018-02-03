@@ -50,6 +50,7 @@ Game.getCoordinates = function(layer,pointer){
 
 Game.addNewPlayer = function(id,x,y){
     Game.playerMap[id] = game.add.sprite(x,y,'sprite');
+    Game.playerMap[id].onBeginContact.add(player_coll, this);
 };
 
 Game.movePlayer = function(id,x,y){
