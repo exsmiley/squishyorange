@@ -17,9 +17,10 @@ Game.preload = function() {
 
 Game.create = function(){
     Game.playerMap = {};
-    var testKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+    var testKey = game.input.keyboard.addKey(Phaser.Keyboard.Up);
     testKey.onDown.add(Client.sendTest, this);
     var map = game.add.tilemap('map');
+    cursors = game.input.keyboard.createCursorKeys();
     map.addTilesetImage('tilesheet', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
     var layer;
     for(var i = 0; i < map.layers.length; i++) {
@@ -29,6 +30,19 @@ Game.create = function(){
     layer.events.onInputUp.add(Game.getCoordinates, this);
     Client.askNewPlayer();
 };
+
+Game.update = function(){
+    if (cursors.left.isDown)
+    {
+        Client.sendTest()
+        console.log('hi')
+    }
+    else if (cursors.right.isDown)
+    {
+        Client.sendTest()
+        console.log('hi2')
+    }
+}
 
 Game.getCoordinates = function(layer,pointer){
     Client.sendClick(pointer.worldX,pointer.worldY);
