@@ -1,22 +1,9 @@
-/**
- * Created by Jerome on 03-03-17.
- */
-
 var Client = {};
 Client.socket = io.connect();
-
-Client.sendTest = function(){
-    console.log("test sent");
-    Client.socket.emit('test');
-};
 
 Client.askNewPlayer = function(){
     Client.socket.emit('newplayer');
 };
-
-// Client.sendClick = function(x,y){
-//   Client.socket.emit('click',{x:x,y:y});
-// };
 
 Client.socket.on('yourId',function(id){
     myId = id;
@@ -46,6 +33,7 @@ Client.socket.on('allplayers',function(data){
     //     Game.movePlayer(data.id,data.x,data.y);
     // });
     Client.socket.on('movement',function(data){
+        console.log(data)
         Game.nudgePlayer(data.id, data.direction);
     });
 

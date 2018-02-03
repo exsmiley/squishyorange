@@ -38,7 +38,8 @@ io.on('connection',function(socket){
         // });
         socket.on('movement', function(direction) {
             // console.log(socket.id + ' wants to move ' + direction)
-            socket.broadcast.emit('movement', {id: socket.player.id, direction: direction})
+            // socket.emit('movement', {id: socket.player.id, direction: direction})
+            io.emit('movement', {id: socket.player.id, direction: direction})
         })
 
         socket.on('disconnect',function(){

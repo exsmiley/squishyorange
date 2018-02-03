@@ -1,8 +1,3 @@
-/*
- * Author: Jerome Renaux
- * E-mail: jerome.renaux@gmail.com
- */
-
 var myId = null;
 var frameCount = 0;
 var Game = {};
@@ -22,8 +17,6 @@ Game.preload = function() {
 Game.create = function(){
     Game.playerMap = {};
     game.physics.startSystem(Phaser.Physics.P2JS);
-    // var testKey = game.input.keyboard.addKey(Phaser.Keyboard.Up);
-    // testKey.onDown.add(Client.sendTest, this);
     var map = game.add.tilemap('map');
     cursors = game.input.keyboard.createCursorKeys();
     map.addTilesetImage('tilesheet', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
@@ -31,69 +24,57 @@ Game.create = function(){
     for(var i = 0; i < map.layers.length; i++) {
         layer = map.createLayer(i);
     }
-    // layer.inputEnabled = true; // Allows clicking on the map ; it's enough to do it on the last layer
-    // layer.events.onInputUp.add(Game.getCoordinates, this);
 
     Client.askNewPlayer();
 };
 
 Game.update = function(){
+    frameCount += 1;
 
-    // for(var id in Game.playerMap) {
-    //     var sprite = Game.playerMap[id];
-
-    //     sprite.body.setZeroVelocity();
-    // }
-
-    if(myId == null || !Game.playerMap[myId]) {
+    if(myId == null || !Game.playerMap[myId] || frameCount < 3) {
         return;
     }
 
     var sprite = Game.playerMap[myId];
 
-    sprite.body.setZeroVelocity();
+    // sprite.body.setZeroVelocity();
     
     var velocity = 400;
+    var moved = false;
 
     if (cursors.left.isDown)
     {
         Client.socket.emit('movement', 'left')
-        sprite.body.moveLeft(velocity);
+        // sprite.body.moveLeft(velocity);
+        moved = true;
     }
     else if (cursors.right.isDown)
     {
         Client.socket.emit('movement', 'right')
-        sprite.body.moveRight(velocity);
+        // sprite.body.moveRight(velocity);
+        moved = true;
     }
 
     if (cursors.up.isDown)
     {
         Client.socket.emit('movement', 'up')
-        sprite.body.moveUp(velocity);
+        // sprite.body.moveUp(velocity);
+        moved = true;
     }
     else if (cursors.down.isDown)
     {
         Client.socket.emit('movement', 'down')
-        sprite.body.moveDown(velocity);
+        // sprite.body.moveDown(velocity);
+        moved = true;
     }
 
-    // lets it move a little bit before stopping it
-    if(Game.moving.length > 0 && frameCount > 6) {
-        for(var i = 0; i < Game.moving.length; i++) {
-            var id = Game.moving.shift();
-            var sprite = Game.playerMap[id];
-            sprite.body.setZeroVelocity();
-        }
 
-        frameCount = 0;
+    if(!moved) {
+        Client.socket.emit('movement', 'none')
     }
 
-    frameCount += 1;
+    frameCount = 0;
 }
-
-Game.getCoordinates = function(layer,pointer){
-    Client.sendClick(pointer.worldX,pointer.worldY);
-};
 
 Game.addNewPlayer = function(id,x,y){
     Game.playerMap[id] = game.add.sprite(x,y,'sprite');
@@ -102,18 +83,12 @@ Game.addNewPlayer = function(id,x,y){
     
 };
 
-Game.movePlayer = function(id,x,y){
-    var player = Game.playerMap[id];
-    var distance = Phaser.Math.distance(player.x,player.y,x,y);
-    var tween = game.add.tween(player);
-    var duration = distance*10;
-    tween.to({x:x,y:y}, duration);
-    tween.start();
-};
-
 Game.nudgePlayer = function(id, direction){
-    sprite = Game.playerMap[id];
+    // console.log()
+    var sprite = Game.playerMap[id];
 
+    // TODO figure out diagonal movement in the future...
+    sprite.body.setZeroVelocity();
     var velocity = 400;
 
     if (direction == 'left')
@@ -134,8 +109,11 @@ Game.nudgePlayer = function(id, direction){
         sprite.body.moveDown(velocity);
     }
 
-    Game.moving.push(id);
-    // console.log(sprite)
+    if (direction == 'none')
+    {
+        sprite.body.setZeroVelocity();
+    }
+
 };
 
 Game.removePlayer = function(id){
