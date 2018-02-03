@@ -5,6 +5,7 @@ function player_coll (body, bodyB, shapeA, shapeB, equation) {
 	var key = body.sprite.id; 
 	//the type of the body the player made contact with 
 	var type = body.sprite.type; 
+	console.log(type)
 	
 	if (type == "player_body") {
 		//send the player collision

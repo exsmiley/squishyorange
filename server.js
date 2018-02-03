@@ -24,6 +24,7 @@ io.on('connection',function(socket){
             id: server.lastPlayderID++,
             x: randomInt(100,400),
             y: randomInt(100,400)
+            type: "player_body"
         };
         socket.emit('yourId', server.lastPlayderID-1);
         socket.emit('allplayers',getAllPlayers());
@@ -39,6 +40,9 @@ io.on('connection',function(socket){
         socket.on('disconnect',function(){
             io.emit('remove',socket.player.id);
         });
+        socket.on('player_collision', onPlayerCollision){
+            console.log("hi")
+        }
     });
 
     socket.on('test',function(){
