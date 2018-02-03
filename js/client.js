@@ -28,6 +28,7 @@ Client.socket.on('newplayer',function(data){
         game.physics.p2.enable(sprite);
         // sprite.body.setZeroDamping();
         sprite.body.fixedRotation = true; 
+        sprite.body.onBeginContact.add(player_coll, this); 
 });
 
 Client.socket.on('allplayers',function(data){
@@ -38,6 +39,7 @@ Client.socket.on('allplayers',function(data){
         game.physics.p2.enable(sprite);
         // sprite.body.setZeroDamping();
         sprite.body.fixedRotation = true;
+        sprite.body.onBeginContact.add(player_coll, this); 
     }
 
     // Client.socket.on('move',function(data){

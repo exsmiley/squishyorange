@@ -77,6 +77,7 @@ Game.update = function(){
         sprite.body.moveDown(velocity);
     }
 
+    // lets it move a little bit before stopping it
     if(Game.moving.length > 0 && frameCount > 6) {
         for(var i = 0; i < Game.moving.length; i++) {
             var id = Game.moving.shift();
@@ -96,8 +97,8 @@ Game.getCoordinates = function(layer,pointer){
 
 Game.addNewPlayer = function(id,x,y){
     Game.playerMap[id] = game.add.sprite(x,y,'sprite');
-    Game.playerMap[id].body.type = "player_body"
-    Game.playerMap[id].body.onBeginContact.add(player_coll, this); 
+    // Game.playerMap[id].body.type = "player_body"
+    
     
 };
 
