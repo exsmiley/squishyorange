@@ -1,4 +1,5 @@
 var Client = {};
+var gameMode = false;
 Client.socket = io.connect();
 
 Client.askNewPlayer = function(){
@@ -7,6 +8,7 @@ Client.askNewPlayer = function(){
 
 Client.socket.on('yourId',function(id){
     myId = id;
+    console.log("I am " + myId)
 });
 
 Client.socket.on('newplayer',function(data){
@@ -15,30 +17,53 @@ Client.socket.on('newplayer',function(data){
     game.physics.p2.enable(sprite);
     sprite.body.fixedRotation = true; 
     sprite.body.onBeginContact.add(player_coll, this); 
-    sprite.body.id = data.id
+    sprite.body.data.derp = data.id
 });
 
 Client.socket.on('allplayers',function(data){
-
     for(var i = 0; i < data.length; i++){
         Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
         sprite = Game.playerMap[data[i].id];
         game.physics.p2.enable(sprite);
         sprite.body.fixedRotation = true;
-        sprite.body.onBeginContact.add(player_coll, this); 
-        sprite.body.id = data[i].id;
+        sprite.body.data.derp = data[i].id;
+
+        if(data[i].id == myId) {
+            sprite.body.onBeginContact.add(player_coll, this); 
+        }
     }
 
-    // Client.socket.on('move',function(data){
-    //     Game.movePlayer(data.id,data.x,data.y);
-    // });
     Client.socket.on('movement',function(data){
         Game.nudgePlayer(data.id, data.direction);
     });
+
+    Client.socket.on('catch', function(id) {
+        
+        if(gameMode) {
+            // um the squish quit gg TODO
+            console.log('The squish quit :\'(')
+        }
+
+        gameMode = true;
+        if(id != myId) {
+            setTimeout(function() {console.log(id + ' is the squish!')}, 3000);
+        } else {
+            console.log(id + ' is the squish!')
+        }
+    });
+
+    Client.socket.on('caught', function(data) {
+        id = data.winner;
+        console.log(id + ' caught the squish!');
+        gameMode = false;
+    });
+
 
     Client.socket.on('remove',function(id){
         Game.removePlayer(id);
     });
 });
 
-
+function start() {
+    Client.socket.emit('start', {});
+}

@@ -17,6 +17,14 @@ server.listen(process.env.PORT || 8081,function(){
     console.log('Listening on '+server.address().port);
 });
 
+// game variables
+var catchSquishMode = true;
+var squishies = [];
+var scores = {};
+var gameGoing = false;
+var startTime;
+
+// socket handler
 io.on('connection',function(socket){
 
     socket.on('newplayer',function(){
@@ -26,6 +34,7 @@ io.on('connection',function(socket){
             y: randomInt(100,400),
             type: "player_body"
         };
+        scores[socket.player.id] = {capture: 0, survival: 0}
         socket.emit('yourId', socket.player.id);
         socket.emit('allplayers',getAllPlayers());
         socket.broadcast.emit('newplayer',socket.player);
@@ -35,18 +44,48 @@ io.on('connection',function(socket){
         })
 
         socket.on('disconnect',function(){
-            io.emit('remove',socket.player.id);
+            io.emit('remove', socket.player.id);
             delete io.sockets.connected[socket.id];
+
+            // check if the squish disconnected
+            var i = squishies.indexOf(socket.player.id);
+            if(i != -1) {
+                squishies.pop(i);
+                if (squishies.length == 0) {
+                    chooseSquish()
+                }
+            }
         });
         socket.on('player_collision', function(data) {
-            console.log("hi")
+            if(gameGoing && catchSquishMode && data.id == squishies[0]) {
+                scores[socket.player.id]['capture'] += 1;
+                // seconds survived gives you survival points
+                scores[data.id]['survival'] += Math.floor((Date.now()-startTime)/1000);
+                io.emit('caught', {winner: socket.player.id, scores: scores});
+                squishies = [];
+                gameGoing = false;
+                chooseSquish();
+            }
         })
     });
 
-    socket.on('test',function(){
-        console.log('test received');
+    socket.on('start', function(blank){
+        chooseSquish()
     });
 });
+
+function chooseSquish() {
+    var players = getAllPlayers();
+    var squishIndex = randomInt(0, players.length);
+    var squishId = players[squishIndex].id;
+    squishies.push(squishId);
+
+    if(catchSquishMode) {
+        io.emit('catch', squishId);
+    }
+    startTime = Date.now();
+    setTimeout(function(){gameGoing = true;}, 3000);
+}
 
 function getAllPlayers(){
     var players = [];
