@@ -26,19 +26,24 @@ io.on('connection',function(socket){
             y: randomInt(100,400)
             type: "player_body"
         };
-        socket.emit('yourId', server.lastPlayderID-1);
+        socket.emit('yourId', socket.player.id);
         socket.emit('allplayers',getAllPlayers());
         socket.broadcast.emit('newplayer',socket.player);
 
-        socket.on('click',function(data){
-            console.log('click to '+data.x+', '+data.y);
-            socket.player.x = data.x;
-            socket.player.y = data.y;
-            io.emit('move',socket.player);
-        });
+        // socket.on('click',function(data){
+        //     console.log('click to '+data.x+', '+data.y);
+        //     socket.player.x = data.x;
+        //     socket.player.y = data.y;
+        //     io.emit('move',socket.player);
+        // });
+        socket.on('movement', function(direction) {
+            // console.log(socket.id + ' wants to move ' + direction)
+            socket.broadcast.emit('movement', {id: socket.player.id, direction: direction})
+        })
 
         socket.on('disconnect',function(){
             io.emit('remove',socket.player.id);
+            delete io.sockets.connected[socket.id];
         });
         socket.on('player_collision', onPlayerCollision){
             console.log("hi")
