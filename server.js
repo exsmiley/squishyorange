@@ -6,9 +6,15 @@ var io = require('socket.io').listen(server);
 app.use('/css',express.static(__dirname + '/css'));
 app.use('/js',express.static(__dirname + '/js'));
 app.use('/assets',express.static(__dirname + '/assets'));
+app.use('/img',express.static(__dirname + '/img'));
+app.use('/vendor',express.static(__dirname + '/vendor'));
 
 app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
+});
+
+app.get('/play',function(req,res){
+    res.sendFile(__dirname+'/play.html');
 });
 
 server.lastPlayderID = 0;
@@ -37,7 +43,11 @@ io.on('connection',function(socket){
         scores[socket.player.id] = {capture: 0, survival: 0}
         socket.emit('yourId', socket.player.id);
         socket.emit('allplayers',getAllPlayers());
-        socket.broadcast.emit('newplayer',socket.player);
+
+        // TODO depends on game mode
+        if(squishies.length > 0)
+            socket.emit('catch', squishies[0])
+        socket.broadcast.emit('newplayer', socket.player);
 
         socket.on('movement', function(direction) {
             io.emit('movement', {id: socket.player.id, direction: direction})

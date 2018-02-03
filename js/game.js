@@ -11,19 +11,23 @@ Game.init = function(){
 Game.preload = function() {
     game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('tileset', 'assets/map/tilesheet.png',32,32);
-    game.load.image('sprite','assets/sprites/sprite.png');
+    // game.load.image('sprite','assets/sprites/sprite.png');
+    game.load.image('sprite','assets/sprites/orange.png');
+    game.load.image('squish','assets/sprites/squishy.png');
+    game.load.image('hmm','assets/map/source.gif');
 };
 
 Game.create = function(){
     Game.playerMap = {};
     game.physics.startSystem(Phaser.Physics.P2JS);
-    var map = game.add.tilemap('map');
+    game.add.image(0, 0, 'hmm');
+    // var map = game.add.tilemap('map');
     cursors = game.input.keyboard.createCursorKeys();
-    map.addTilesetImage('tilesheet', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
-    var layer;
-    for(var i = 0; i < map.layers.length; i++) {
-        layer = map.createLayer(i);
-    }
+    // map.addTilesetImage('tilesheet', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
+    // var layer;
+    // for(var i = 0; i < map.layers.length; i++) {
+    //     layer = map.createLayer(i);
+    // }
 
     Client.askNewPlayer();
 };
