@@ -3,14 +3,14 @@ function player_coll (body, bodyB, shapeA, shapeB, equation) {
 	if (body == null){
 		return
 	}
-	
+	console.log(body)
 	//the id of the collided body that player made contact with 
-	var key = body.sprite.id; 
+	var key = body.data.id; 
 	//the type of the body the player made contact with 
-	var type = body.sprite.type; 
-	console.log(type)
+	var type = body.data.type; 
+	console.log(key + " " + type)
 	
-	if (type == "player_body") {
+	if (key != -1) {
 		//send the player collision
 		Client.socket.emit('player_collision', {id: key}); 
 	}

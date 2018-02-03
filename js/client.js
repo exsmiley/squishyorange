@@ -12,10 +12,10 @@ Client.socket.on('yourId',function(id){
 Client.socket.on('newplayer',function(data){
     Game.addNewPlayer(data.id,data.x,data.y);
     sprite = Game.playerMap[data.id];
-        game.physics.p2.enable(sprite);
-        // sprite.body.setZeroDamping();
-        sprite.body.fixedRotation = true; 
-        sprite.body.onBeginContact.add(player_coll, this); 
+    game.physics.p2.enable(sprite);
+    sprite.body.fixedRotation = true; 
+    sprite.body.onBeginContact.add(player_coll, this); 
+    sprite.body.id = data.id
 });
 
 Client.socket.on('allplayers',function(data){
@@ -24,16 +24,15 @@ Client.socket.on('allplayers',function(data){
         Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
         sprite = Game.playerMap[data[i].id];
         game.physics.p2.enable(sprite);
-        // sprite.body.setZeroDamping();
         sprite.body.fixedRotation = true;
         sprite.body.onBeginContact.add(player_coll, this); 
+        sprite.body.id = data[i].id;
     }
 
     // Client.socket.on('move',function(data){
     //     Game.movePlayer(data.id,data.x,data.y);
     // });
     Client.socket.on('movement',function(data){
-        console.log(data)
         Game.nudgePlayer(data.id, data.direction);
     });
 
