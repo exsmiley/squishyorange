@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/jchoi614/squishyorange/issues"
   },
-  "homepage": "https://github.com/jchoi614/squishyorange#readme"
+  "homepage": "https://github.com/jchoi614/squishyorange#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "phaser-ce": "^2.10.0",
+    "socket.io": "^2.0.4"
+  }
 }
