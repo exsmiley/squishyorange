@@ -1,5 +1,8 @@
 function player_coll (body, bodyB, shapeA, shapeB, equation) {
 	console.log("collision");
+	if (body == null){
+		return
+	}
 	
 	//the id of the collided body that player made contact with 
 	var key = body.sprite.id; 
