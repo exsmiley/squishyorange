@@ -20,7 +20,8 @@ Game.preload = function() {
 Game.create = function(){
     Game.playerMap = {};
     game.physics.startSystem(Phaser.Physics.P2JS);
-    game.add.image(0, 0, 'hmm');
+    var hmm = game.add.image(0, 0, 'hmm');
+    hmm.scale.setTo(0.5,0.5)
     // var map = game.add.tilemap('map');
     cursors = game.input.keyboard.createCursorKeys();
     // map.addTilesetImage('tilesheet', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
@@ -82,6 +83,7 @@ Game.update = function(){
 
 Game.addNewPlayer = function(id,x,y){
     Game.playerMap[id] = game.add.sprite(x,y,'sprite');
+    Game.playerMap[id].scale.setTo(0.5,0.5)
     // Game.playerMap[id].body.type = "player_body"
     
     
