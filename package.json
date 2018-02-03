@@ -1,0 +1,19 @@
+{
+  "name": "squishyorange",
+  "version": "1.0.0",
+  "description": "Squishy Orange Game! :D",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jchoi614/squishyorange.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jchoi614/squishyorange/issues"
+  },
+  "homepage": "https://github.com/jchoi614/squishyorange#readme"
+}
