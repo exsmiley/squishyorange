@@ -33,13 +33,18 @@ Game.create = function(){
     var hmm = game.add.image(0, 0, room);
     hmm.scale.setTo(1,1);
     cursors = game.input.keyboard.createCursorKeys();
-    // var tumble = game.add.image(0,0,'tumble');
-    // var action = tumble.animations.add('tumbling');
-    // tumble.animations.play('tumbling', 5, true);
-    // var rain = game.add.image(0,0,'rain');
-    // var action = rain.animations.add('raining');
-    // rain.animations.play('raining', 20, true);
-    if(room == 'winter') {
+    if(room == 'summer') {
+        var tumble = game.add.image(0,0,'tumble');
+        var action = tumble.animations.add('tumbling');
+        tumble.animations.play('tumbling', 5, true);
+    }
+    else if(room == 'spring') {
+        var rain = game.add.image(0,0,'rain');
+        var action = rain.animations.add('raining');
+        rain.animations.play('raining', 20, true);
+    }
+
+    else if(room == 'winter') {
         var snow = game.add.image(0,0,'snow')
         var action = snow.animations.add('snowing');
         snow.animations.play('snowing', 10, true);
