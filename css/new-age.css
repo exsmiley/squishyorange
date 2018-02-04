@@ -398,9 +398,9 @@ footer ul li a:hover, footer ul li a:focus, footer ul li a:active, footer ul li 
 }
 
 .bg-primary {
-  background: #fdcc52;
-  background: -webkit-linear-gradient(#fdcc52, #fdc539);
-  background: linear-gradient(#fdcc52, #fdc539);
+  /*background: #fdcc52;*/
+  /*background: -webkit-linear-gradient(#fdcc52, #fdc539);*/
+  background: linear-gradient(#fdc539, #fdc539);
 }
 
 .text-primary {
