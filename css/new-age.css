@@ -236,14 +236,17 @@ section.download .badges .badge-link img {
 
 section.features .section-heading {
   margin-bottom: 100px;
+  color:#494844
 }
 
 section.features .section-heading h2 {
   margin-top: 0;
+  color:#494844
 }
 
 section.features .section-heading p {
   margin-bottom: 0;
+  color:#494844
 }
 
 section.features .device-container,
@@ -254,6 +257,7 @@ section.features .feature-item {
 
 section.features .device-container {
   margin-bottom: 100px;
+  color:#494844
 }
 
 @media (min-width: 992px) {
