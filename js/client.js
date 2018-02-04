@@ -2,6 +2,7 @@ var Client = {};
 var gameMode = false;
 var squishId = null;
 var squishes = new Set();
+var mode = null;
 Client.socket = io.connect();
 
 Client.names = {};
@@ -68,7 +69,11 @@ Client.socket.on('allplayers',function(data){
             setTimeout(function() {
                 squishes.add(id)
                 Game.changeToSquish(id);
-                $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + Client.names[id] + ' is the squish!</div>');
+                var s = ' is the squish'
+                if(!mode) {
+                    s = ' is the SQUISH ZOMBIE'
+                }
+                $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + Client.names[id] + s + '!</div>');
                 updateScroll();
             }, 3000);
         } else {
@@ -137,7 +142,7 @@ Client.socket.on('allplayers',function(data){
     });
 
     Client.socket.on('mode',function(bool){
-        console.log(bool)
+        mode = bool;
         if(bool) {
             $('#gameMode').html('Catch the Squish');
         } else {
