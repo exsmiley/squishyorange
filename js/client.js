@@ -49,6 +49,7 @@ Client.socket.on('allplayers',function(data){
 
     Client.socket.on('catch', function(id) {
         $('#startButton').html('')
+        $('#warnings').css('visibility', 'visible')
         if(squishes.has(id)) {
             return;
         }

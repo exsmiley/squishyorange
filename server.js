@@ -165,6 +165,7 @@ function chooseSquish(room) {
         return chooseSquish(room);
     }
 
+    rooms[room]['lastSquish'] = squishId;
     var squishies = rooms[room]['squishies']
     squishies.push(squishId);
 
