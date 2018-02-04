@@ -50,9 +50,18 @@ Client.socket.on('allplayers',function(data){
     Client.socket.on('catch', function(id) {
         $('#startButton').html('')
         $('#warnings').css('visibility', 'visible')
+        if(!Game.playerMap.hasOwnProperty(id)) {
+            return;
+        }
+
         if(squishes.has(id)) {
             return;
         }
+
+        for(var squish of squishes) {
+            Game.changeToOrange(squish);
+        }
+        squishes = new Set();
 
         gameMode = true;
         if(id != myId) {
@@ -90,16 +99,45 @@ Client.socket.on('allplayers',function(data){
         refreshScores();
     });
 
+    Client.socket.on('new squish', function(data) {
+        var id = data.id;
+        var catcher = data.catcher;
+        if(squishes.has(id)) {
+            return;
+        }
+        squishes.add(id)
+        Game.changeToSquish(id);
+        $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + Client.names[id] + ' got turned into a squish by ' + Client.names[catcher] + '!</div>');
+        updateScroll();
+    });
+
     Client.socket.on('names',function(names){
         Client.names = names;
         refreshScores();
+    });
+
+    Client.socket.on('survivor',function(id){
+        $('#warnings').append('<div class="alert alert-primary" role="alert" id="newSquish">' + Client.names[id] + ' was the last survivor!</div>');
+        updateScroll();
+        for(var squish of squishes) {
+            Game.changeToOrange(squish);
+        }
+        squishes = new Set();
     });
 
     Client.socket.on('remove',function(id){
         Game.removePlayer(id);
     });
 
+    Client.socket.on('refresh',function(){
+        for(var squish of squishes) {
+            Game.changeToOrange(squish);
+        }
+        squishes = new Set();
+    });
+
     Client.socket.on('mode',function(bool){
+        console.log(bool)
         if(bool) {
             $('#gameMode').html('Catch the Squish');
         } else {

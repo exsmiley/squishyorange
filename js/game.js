@@ -134,7 +134,10 @@ Game.changeToOrange = function(id) {
 }
 
 Game.changeToSquish = function(id) {
-    Game.playerMap[id].loadTexture('squishy', 0);
+    console.log(id + "is squishy");
+    if(Game.playerMap.hasOwnProperty(id)){
+        Game.playerMap[id].loadTexture('squishy', 0);
+    }
 }
 
 Game.nudgePlayer = function(id, direction){

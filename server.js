@@ -65,7 +65,7 @@ io.on('connection',function(socket){
                 squishies: [],
                 gameGoing: false,
                 selectedId: socket.player.id,
-                catchSquishMode: true,
+                catchSquishMode: false,
                 startTime: 0,
                 lastSquish: null
             }
@@ -128,8 +128,10 @@ io.on('connection',function(socket){
             var i = squishies.indexOf(socket.player.id);
             if(i != -1) {
                 squishies.pop(i);
-                if (squishies.length == 0) {
+                if (squishies.length >= 0) {
                     chooseSquish(socket.room)
+                } else {
+                    rooms[socket.room]['gameGoing'] = false;
                 }
             }
         });
@@ -144,6 +146,27 @@ io.on('connection',function(socket){
                 io.to(socket.room).emit('scores', rooms[socket.room]['scores']);
                 chooseSquish(socket.room);
             }
+            else if(rooms[socket.room]['gameGoing'] && !rooms[socket.room]['catchSquishMode'] && rooms[socket.room]['squishies'].indexOf(socket.player.id) > -1) {
+                rooms[socket.room]['squishies'].push(data.id);
+                io.to(socket.room).emit('new squish', {id: data.id, catcher: socket.player.id});
+                rooms[socket.room]['scores'][data.id]['survival'] += Math.floor((Date.now()-rooms[room]['startTime'])/1000-3)
+
+                var players = getAllPlayers(room);
+
+                if(players.length-1 <= rooms[socket.room]['squishies'].length) {
+                    var squishset = new Set(rooms[socket.room]['squishies']);
+                    for(var player of players) {
+                        if(!squishset.has(player.id)) {
+                            rooms[socket.room]['scores'][data.id]['survival'] += Math.floor((Date.now()-rooms[room]['startTime'])/1000+5)
+                            io.to(socket.room).emit('survivor', player.id);
+                            io.to(socket.room).emit('scores', rooms[socket.room]['scores']);
+                            rooms[socket.room]['gameGoing'] = false;
+                            rooms[socket.room]['squishies'] = [];
+                        }
+                    }
+                    return chooseSquish(socket.room)
+                }
+            }
         })
     });
 
@@ -157,23 +180,43 @@ function chooseSquish(room) {
     if(players.length == 0) {
         rooms[room]['gameGoing'] = false;
         return;
-    }
-    var squishIndex = randomInt(0, players.length);
-    var squishId = players[squishIndex].id;
+    } else {
+        var squishIndex = randomInt(0, players.length);
+        var squishId = players[squishIndex].id;
 
-    if(rooms[room]['lastSquish'] == squishId) {
-        return chooseSquish(room);
-    }
+        if(rooms[room]['lastSquish'] == squishId) {
+            return chooseSquish(room);
+        } else {
+            console.log('playing' + squishId)
+            io.to(room).emit('refresh');
 
-    rooms[room]['lastSquish'] = squishId;
-    var squishies = rooms[room]['squishies']
-    squishies.push(squishId);
+            rooms[room]['lastSquish'] = squishId;
+            var squishies = rooms[room]['squishies']
+            squishies.push(squishId);
 
-    if(rooms[room]['catchSquishMode']) {
-        io.to(room).emit('catch', squishId);
+            // if(rooms[room]['catchSquishMode']) {
+            var ran = Math.random();
+
+            if(ran < 0.5 && players.length > 2) {
+                rooms[room]['catchSquishMode'] = false;
+            } else {
+                rooms[room]['catchSquishMode'] = true;
+            }
+
+            console.log(ran + " " + rooms[room]['catchSquishMode'] + ' ' + players.length)
+
+            io.to(room).emit('mode', rooms[room]['catchSquishMode']);
+
+
+            io.to(room).emit('catch', squishId);
+            // }
+            rooms[room]['startTime'] = Date.now();
+            setTimeout(function(){rooms[room]['gameGoing'] = true;}, 3000);
+        }
     }
-    rooms[room]['startTime'] = Date.now();
-    setTimeout(function(){rooms[room]['gameGoing'] = true;}, 3000);
+    
+
+    
 }
 
 function getAllPlayers(room){
