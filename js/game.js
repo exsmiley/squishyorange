@@ -31,7 +31,7 @@ Game.create = function(){
     game.physics.startSystem(Phaser.Physics.P2JS);
     if (room=='classic'){
         game.add.tileSprite(0,0,2048,2048, 'classic');
-        game.world.setBounds(0,0,2048,2048);
+        game.world.setBounds(0,0,1000,700);
     }
     else{
     game.add.tileSprite(0,0,1700, 850, room);
