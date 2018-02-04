@@ -36,13 +36,7 @@ server.listen(process.env.PORT || 8081,function(){
 });
 
 // game variables
-var catchSquishMode = true;
-var squishies = [];
-var playersMap = {};
-var scores = {};
-var gameGoing = false;
-var startTime;
-var selectedId = 0;
+var rooms = {}
 
 // socket handler
 io.on('connection',function(socket){
@@ -58,14 +52,29 @@ io.on('connection',function(socket){
         // way to make rooms
         socket.join(room)
         socket.room = room
-        playersMap[socket.player.id] = socket.player;
-        scores[socket.player.id] = {capture: 0, survival: 0}
+
+        if(!rooms.hasOwnProperty(room)) {
+            rooms[room] = {
+                playersMap: {},
+                scores: {},
+                squishies: [],
+                gameGoing: false,
+                selectedId: socket.player.id,
+                catchSquishMode: true,
+                startTime: 0
+            }
+        }
+
+        rooms[room]['playersMap'][socket.player.id] = socket.player;
+        rooms[room]['scores'][socket.player.id] = {capture: 0, survival: 0}
+        
         socket.emit('yourId', socket.player.id);
-        socket.emit('allplayers',getAllPlayers());
+        socket.emit('allplayers', getAllPlayers(room));
 
         // TODO depends on game mode
-        if(squishies.length > 0)
-            socket.emit('catch', squishies[0])
+        if(rooms[room]['squishies'].length > 0) {
+            socket.emit('catch', rooms[room]['squishies'][0])
+        }
         socket.broadcast.to(socket.room).emit('newplayer', socket.player);
 
         socket.on('movement', function(direction) {
@@ -73,73 +82,76 @@ io.on('connection',function(socket){
         })
 
         socket.on('playerMap', function(data) {
-            if(selectedId == data.id) {
+            var room = socket.room;
+            if(rooms[room]['selectedId'] == data.id) {
                 // socket.broadcast.emit('playerMap', data.players);
                 for(var id in data.players) {
-                    if(playersMap.hasOwnProperty(id)) {
-                        playersMap[id].x = data.players[id].x
-                        playersMap[id].y = data.players[id].y
+                    if(rooms[room]['playersMap'].hasOwnProperty(id)) {
+                        rooms[room]['playersMap'][id].x = data.players[id].x
+                        rooms[room]['playersMap'][id].y = data.players[id].y
                     }
                 }
             }
-            var players = getAllPlayers();
+            var players = getAllPlayers(room);
             var squishIndex = randomInt(0, players.length);
-            selectedId = players[squishIndex].id;
+            rooms[room]['selectedId'] = players[squishIndex].id;
         })
 
         socket.on('disconnect',function(){
             io.to(socket.room).emit('remove', socket.player.id);
             delete io.sockets.connected[socket.id];
-            delete playersMap[socket.player.id]
+            delete rooms[socket.room]['playersMap'][socket.player.id]
 
             // check if the squish disconnected
+            var squishies = rooms[socket.room]['squishies'];
             var i = squishies.indexOf(socket.player.id);
             if(i != -1) {
                 squishies.pop(i);
                 if (squishies.length == 0) {
-                    chooseSquish()
+                    chooseSquish(socket.room)
                 }
             }
         });
         socket.on('player_collision', function(data) {
-            if(gameGoing && catchSquishMode && data.id == squishies[0]) {
-                scores[socket.player.id]['capture'] += 1;
+            if(rooms[socket.room]['gameGoing'] && rooms[socket.room]['catchSquishMode'] && data.id == rooms[socket.room]['squishies'][0]) {
+                rooms[socket.room]['scores'][socket.player.id]['capture'] += 1;
                 // seconds survived gives you survival points
-                scores[data.id]['survival'] += Math.floor((Date.now()-startTime)/1000);
-                io.to(socket.room).emit('caught', {winner: socket.player.id, scores: scores});
-                squishies = [];
-                gameGoing = false;
-                chooseSquish();
+                rooms[socket.room]['scores'][data.id]['survival'] += Math.floor((Date.now()-rooms[room]['startTime'])/1000);
+                io.to(socket.room).emit('caught', {winner: socket.player.id, scores: rooms[socket.room]['scores']});
+                rooms[socket.room]['squishies'] = [];
+                rooms[socket.room]['gameGoing'] = false;
+                chooseSquish(socket.room);
             }
         })
     });
 
     socket.on('start', function(blank){
-        chooseSquish()
+        chooseSquish(socket.room)
     });
 });
 
-function chooseSquish() {
-    var players = getAllPlayers();
+function chooseSquish(room) {
+    var players = getAllPlayers(room);
     if(players.length == 0) {
         return;
     }
     var squishIndex = randomInt(0, players.length);
     var squishId = players[squishIndex].id;
+    var squishies = rooms[room]['squishies']
     squishies.push(squishId);
 
-    if(catchSquishMode) {
-        io.emit('catch', squishId);
+    if(rooms[room]['catchSquishMode']) {
+        io.to(room).emit('catch', squishId);
     }
-    startTime = Date.now();
-    setTimeout(function(){gameGoing = true;}, 3000);
+    rooms[room]['startTime'] = Date.now();
+    setTimeout(function(){rooms[room]['gameGoing'] = true;}, 3000);
 }
 
-function getAllPlayers(){
+function getAllPlayers(room){
     var playersList = [];
 
-    for(var id in playersMap) {
-        playersList.push(playersMap[id]);
+    for(var id in rooms[room]['playersMap']) {
+        playersList.push(rooms[room]['playersMap'][id]);
     }
     return playersList;
 }

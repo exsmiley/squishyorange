@@ -2,6 +2,7 @@ var myId = null;
 var frameCount = 0;
 var positionCount = 0;
 var Game = {};
+var room = window.location.href.split('/')[3];
 
 Game.moving = [];
 
@@ -15,7 +16,7 @@ Game.preload = function() {
     // game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('orange','assets/sprites/orange.png');
     game.load.image('squishy','assets/sprites/squishy.png');
-    game.load.image('hmm','assets/map/source.gif');
+    game.load.image('classic','assets/map/source.gif');
     game.load.image('spring','assets/map/spring.png');
     game.load.image('summer','assets/map/summer.png');
     game.load.image('winter','assets/map/winter.png');
@@ -28,7 +29,7 @@ Game.preload = function() {
 Game.create = function(){
     Game.playerMap = {};
     game.physics.startSystem(Phaser.Physics.P2JS);
-    var hmm = game.add.image(0, 0, 'winter');
+    var hmm = game.add.image(0, 0, room);
     hmm.scale.setTo(1,1);
     cursors = game.input.keyboard.createCursorKeys();
     // var tumble = game.add.image(0,0,'tumble');
@@ -37,9 +38,12 @@ Game.create = function(){
     // var rain = game.add.image(0,0,'rain');
     // var action = rain.animations.add('raining');
     // rain.animations.play('raining', 20, true);
-    var snow = game.add.image(0,0,'snow')
-    var action = snow.animations.add('snowing');
-    snow.animations.play('snowing', 10, true);
+    if(room == 'winter') {
+        var snow = game.add.image(0,0,'snow')
+        var action = snow.animations.add('snowing');
+        snow.animations.play('snowing', 10, true);
+    }
+    
 
     Client.askNewPlayer();
     
