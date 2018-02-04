@@ -4,7 +4,8 @@ var squishId = null;
 Client.socket = io.connect();
 
 Client.askNewPlayer = function(){
-    Client.socket.emit('newplayer');
+    var room = window.location.href.split('/')[3];
+    Client.socket.emit('newplayer', room);
 };
 
 Client.socket.on('yourId',function(id){
