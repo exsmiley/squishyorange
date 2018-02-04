@@ -64,7 +64,7 @@ Game.update = function(){
     frameCount += 1;
     positionCount += 1;
 
-    if(positionCount > 30) {
+    if(positionCount > 120) {
         var data = {};
 
         for(var id in Game.playerMap) {
