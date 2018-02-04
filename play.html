@@ -2,15 +2,35 @@
 <html lang="en">
 <head>
 	<link rel="shortcut icon" type="image/png" href="/assets/sprites/orangesmol.png"/>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <meta charset="UTF-8">
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <title>Squishy Orange</title>
 </head>
 <body>
-    <div id='game'></div>
-    <button onClick='start()'>Start this gameeeee!</button>
+    <div class='container-fluid'>
+        <div class='row'>
+            <div class='col-lg-9 my-auto'>
+                <div id='game'></div>
+            </div>
+            <div class='col-lg-3 my-auto'>
+                <h3> Game Mode: <a id='gameMode'></a></h3>
+                <h4> Your ID: <a id='myId'></a></h3>
+                <div id="startButton">
+                    <button class="btn btn-primary btn-lg" onClick='start()'>Start!</button>
+                </div>
+                <div id='warnings'></div>
+                <h5>Scores:</h5>
+                <div id='scores'></div>
+            </div>
+        </div>
+    </div>
+
 </body>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 <script src="js/game.js" type="text/javascript"></script>
 <script src="js/main.js" type="text/javascript"></script>
 <script src="js/client.js" type="text/javascript"></script>

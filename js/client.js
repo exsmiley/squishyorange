@@ -9,7 +9,7 @@ Client.askNewPlayer = function(){
 
 Client.socket.on('yourId',function(id){
     myId = id;
-    console.log("I am " + myId)
+    $('#myId').html(myId);
 });
 
 Client.socket.on('newplayer',function(data){
@@ -39,20 +39,27 @@ Client.socket.on('allplayers',function(data){
     });
 
     Client.socket.on('catch', function(id) {
-        
+        $('#startButton').html('')
         if(gameMode) {
             // um the squish quit gg TODO
-            console.log('The squish quit :\'(')
+            $('#newSquish').remove();
+            $('#warnings').append('<div class="alert alert-dark" role="alert" id="quitter">The squish quit!</div>');
+            setTimeout(function() {
+                $('#quitter').remove();
+            }, 2000)
         }
 
         gameMode = true;
         if(id != myId) {
             setTimeout(function() {
                 Game.changeToSquish(id);
-                console.log(id + ' is the squish!');
+                $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + id + ' is the squish!</div>');
+                setTimeout(function() {
+                    $('#newSquish').remove();
+                }, 2000)
             }, 3000);
         } else {
-            console.log(id + ' is the squish!')
+            $('#warnings').append('<div class="alert alert-danger" role="alert" id="newSquish">You are the squish!</div>');
             Game.changeToSquish(id);
         }
         squishId = id;
@@ -61,13 +68,30 @@ Client.socket.on('allplayers',function(data){
     Client.socket.on('caught', function(data) {
         Game.changeToOrange(squishId);
         id = data.winner;
-        console.log(id + ' caught the squish!');
+        $('#newSquish').remove();
+        $('#warnings').append('<div class="alert alert-primary" role="alert" id="caught">' + id + ' caught the squish!</div>');
+        setTimeout(function() {
+            $('#caught').remove();
+        }, 2000)
         gameMode = false;
     });
 
 
     Client.socket.on('playerMap', function(playerMap) {
         Game.updatePlayers(playerMap);
+    });
+
+    Client.socket.on('scores', function(scores) {
+        var s = '<table class="table table-sm"><thead class="thead-inverse"><tr><th>Id</th><th>Capture</th><th>Survival</th>';
+        s += '</tr></thead><tbody>';
+        for(var id in scores) {
+            s += '<tr><td>' + id + '</td>';
+            s += '<td>' + scores[id]['capture'] + '</td>';
+            s += '<td>' + scores[id]['survival'] + '</td>';
+            s += '</tr>'
+        }
+        s += '</tbody></table>';
+        $('#scores').html(s);
     });
 
 

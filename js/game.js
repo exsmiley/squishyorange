@@ -3,6 +3,7 @@ var frameCount = 0;
 var positionCount = 0;
 var Game = {};
 var room = window.location.href.split('/')[3];
+$('#gameMode').html(room);
 
 Game.moving = [];
 

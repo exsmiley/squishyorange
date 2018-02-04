@@ -14,7 +14,6 @@ app.get('/',function(req,res){
 });
 
 app.get('/classic',function(req,res){
-    console.log(__dirname);
     res.sendFile(__dirname+'/play.html');
 });
 
@@ -70,6 +69,7 @@ io.on('connection',function(socket){
         
         socket.emit('yourId', socket.player.id);
         socket.emit('allplayers', getAllPlayers(room));
+        io.to(room).emit('scores', rooms[room]['scores']);
 
         // TODO depends on game mode
         if(rooms[room]['squishies'].length > 0) {
@@ -101,6 +101,7 @@ io.on('connection',function(socket){
             io.to(socket.room).emit('remove', socket.player.id);
             delete io.sockets.connected[socket.id];
             delete rooms[socket.room]['playersMap'][socket.player.id]
+            delete rooms[socket.room]['scores'][socket.player.id]
 
             // check if the squish disconnected
             var squishies = rooms[socket.room]['squishies'];
@@ -115,11 +116,12 @@ io.on('connection',function(socket){
         socket.on('player_collision', function(data) {
             if(rooms[socket.room]['gameGoing'] && rooms[socket.room]['catchSquishMode'] && data.id == rooms[socket.room]['squishies'][0]) {
                 rooms[socket.room]['scores'][socket.player.id]['capture'] += 1;
-                // seconds survived gives you survival points
-                rooms[socket.room]['scores'][data.id]['survival'] += Math.floor((Date.now()-rooms[room]['startTime'])/1000);
+                // seconds survived gives you survival points minus 3 seconds startup
+                rooms[socket.room]['scores'][data.id]['survival'] += Math.floor((Date.now()-rooms[room]['startTime'])/1000-3);
                 io.to(socket.room).emit('caught', {winner: socket.player.id, scores: rooms[socket.room]['scores']});
                 rooms[socket.room]['squishies'] = [];
                 rooms[socket.room]['gameGoing'] = false;
+                io.to(socket.room).emit('scores', rooms[socket.room]['scores']);
                 chooseSquish(socket.room);
             }
         })
@@ -133,6 +135,7 @@ io.on('connection',function(socket){
 function chooseSquish(room) {
     var players = getAllPlayers(room);
     if(players.length == 0) {
+        rooms[room]['gameGoing'] = false;
         return;
     }
     var squishIndex = randomInt(0, players.length);
