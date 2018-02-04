@@ -13,10 +13,22 @@ app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
 });
 
-app.get('/play',function(req,res){
+app.get('/classic',function(req,res){
+    console.log(__dirname);
     res.sendFile(__dirname+'/play.html');
 });
 
+app.get('/spring',function(req,res){
+    res.sendFile(__dirname+'/play.html');
+});
+
+app.get('/summer',function(req,res){
+    res.sendFile(__dirname+'/play.html');
+});
+
+app.get('/winter',function(req,res){
+    res.sendFile(__dirname+'/play.html');
+});
 server.lastPlayderID = 0;
 
 server.listen(process.env.PORT || 8081,function(){
@@ -42,7 +54,7 @@ io.on('connection',function(socket){
             y: randomInt(100,400),
             type: "player_body"
         };
-
+        
         // way to make rooms
         socket.join(room)
         socket.room = room

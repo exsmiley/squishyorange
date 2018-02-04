@@ -11,7 +11,7 @@ Game.init = function(){
 
 Game.preload = function() {
     game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.spritesheet('tileset', 'assets/map/tilesheet.png',32,32);
+    //game.load.spritesheet('tileset', 'assets/map/tilesheet.png',32,32);
     // game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('orange','assets/sprites/orange.png');
     game.load.image('squishy','assets/sprites/squishy.png');
@@ -19,16 +19,30 @@ Game.preload = function() {
     game.load.image('spring','assets/map/spring.png');
     game.load.image('summer','assets/map/summer.png');
     game.load.image('winter','assets/map/winter.png');
+    game.load.spritesheet('snow', 'assets/sprites/snow.png', 1400, 1400, 22);
+    game.load.spritesheet('rain', 'assets/sprites/rain.png', 1400, 720, 8);
+    game.load.spritesheet('tumble', 'assets/sprites/tumble.png', 1400, 200, 11);
+      
 };
 
 Game.create = function(){
     Game.playerMap = {};
     game.physics.startSystem(Phaser.Physics.P2JS);
-    var hmm = game.add.image(0, 0, 'hmm');
-    hmm.scale.setTo(0.5,0.5)
+    var hmm = game.add.image(0, 0, 'winter');
+    hmm.scale.setTo(1,1);
     cursors = game.input.keyboard.createCursorKeys();
+    // var tumble = game.add.image(0,0,'tumble');
+    // var action = tumble.animations.add('tumbling');
+    // tumble.animations.play('tumbling', 5, true);
+    // var rain = game.add.image(0,0,'rain');
+    // var action = rain.animations.add('raining');
+    // rain.animations.play('raining', 20, true);
+    var snow = game.add.image(0,0,'snow')
+    var action = snow.animations.add('snowing');
+    snow.animations.play('snowing', 10, true);
 
     Client.askNewPlayer();
+    
 };
 
 Game.update = function(){
