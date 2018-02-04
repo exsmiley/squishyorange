@@ -15,6 +15,9 @@ Game.preload = function() {
     game.load.image('sprite','assets/sprites/orange.png');
     game.load.image('squish','assets/sprites/squishy.png');
     game.load.image('hmm','assets/map/source.gif');
+    game.load.image('spring','assets/map/spring.png');
+    game.load.image('summer','assets/map/summer.png');
+    game.load.image('winter','assets/map/winter.png');
 };
 
 Game.create = function(){
