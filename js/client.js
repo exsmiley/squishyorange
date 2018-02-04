@@ -1,6 +1,7 @@
 var Client = {};
 var gameMode = false;
 var squishId = null;
+var squishes = new Set();
 Client.socket = io.connect();
 
 Client.names = {};
@@ -36,6 +37,10 @@ Client.socket.on('allplayers',function(data){
             sprite.body.onBeginContact.add(player_coll, this); 
             game.camera.follow(sprite);
         }
+
+        if(squishes.has(data[i].id)) {
+            Game.changeToSquish(data[i].id);
+        }
     }
 
     Client.socket.on('movement',function(data){
@@ -44,23 +49,22 @@ Client.socket.on('allplayers',function(data){
 
     Client.socket.on('catch', function(id) {
         $('#startButton').html('')
-        if(gameMode) {
-            // um the squish quit gg TODO
-            $('#newSquish').remove();
-            $('#warnings').append('<div class="alert alert-dark" role="alert" id="quitter">The squish quit!</div>');
-            setTimeout(function() {
-                $('#quitter').remove();
-            }, 2000)
+        if(squishes.has(id)) {
+            return;
         }
 
         gameMode = true;
         if(id != myId) {
             setTimeout(function() {
+                squishes.add(id)
                 Game.changeToSquish(id);
                 $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + Client.names[id] + ' is the squish!</div>');
+                updateScroll();
             }, 3000);
         } else {
+            squishes.add(id);
             $('#warnings').append('<div class="alert alert-danger" role="alert" id="newSquish">You are the squish!</div>');
+            updateScroll();
             Game.changeToSquish(id);
         }
         squishId = id;
@@ -69,11 +73,9 @@ Client.socket.on('allplayers',function(data){
     Client.socket.on('caught', function(data) {
         Game.changeToOrange(squishId);
         id = data.winner;
-        $('#newSquish').remove();
+        squishes = new Set();
         $('#warnings').append('<div class="alert alert-primary" role="alert" id="caught">' + Client.names[id] + ' caught the squish!</div>');
-        setTimeout(function() {
-            $('#caught').remove();
-        }, 2000)
+        updateScroll();
         gameMode = false;
     });
 
@@ -124,6 +126,11 @@ function refreshScores() {
     }
     s += '</tbody></table>';
     $('#scores').html(s);
+}
+
+function updateScroll(){
+    var element = document.getElementById("warnings");
+    element.scrollTop = element.scrollHeight;
 }
 
 // press enter

@@ -66,7 +66,8 @@ io.on('connection',function(socket){
                 gameGoing: false,
                 selectedId: socket.player.id,
                 catchSquishMode: true,
-                startTime: 0
+                startTime: 0,
+                lastSquish: null
             }
         }
 
@@ -159,6 +160,11 @@ function chooseSquish(room) {
     }
     var squishIndex = randomInt(0, players.length);
     var squishId = players[squishIndex].id;
+
+    if(rooms[room]['lastSquish'] == squishId) {
+        return chooseSquish(room);
+    }
+
     var squishies = rooms[room]['squishies']
     squishies.push(squishId);
 
