@@ -37,9 +37,9 @@ Game.create = function(){
     // var rain = game.add.image(0,0,'rain');
     // var action = rain.animations.add('raining');
     // rain.animations.play('raining', 20, true);
-    // var snow = game.add.image(0,0,'snow')
-    // var action = snow.animations.add('snowing');
-    // snow.animations.play('snowing', 10, true);
+    var snow = game.add.image(0,0,'snow')
+    var action = snow.animations.add('snowing');
+    snow.animations.play('snowing', 10, true);
 
     Client.askNewPlayer();
     
