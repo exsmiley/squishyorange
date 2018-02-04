@@ -19,8 +19,8 @@ Game.preload = function() {
     game.load.image('spring','assets/map/spring.png');
     game.load.image('summer','assets/map/summer.png');
     game.load.image('winter','assets/map/winter.png');
-    game.load.spritesheet('snow', 'assets/sprites/snow.png', 1400, 1400, 22);
-    game.load.spritesheet('rain', 'assets/sprites/rain.png', 1400, 720, 8);
+    game.load.spritesheet('snow', 'assets/sprites/snow2.png', 1700, 1700, 22);
+    game.load.spritesheet('rain', 'assets/sprites/rain2.png', 1700, 875, 8);
     game.load.spritesheet('tumble', 'assets/sprites/tumble.png', 1400, 200, 11);
     game.load.image('test', 'assets/map/test.jpg');
       
