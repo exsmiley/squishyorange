@@ -1,5 +1,6 @@
 var Client = {};
 var gameMode = false;
+var squishId = null;
 Client.socket = io.connect();
 
 Client.askNewPlayer = function(){
@@ -46,17 +47,29 @@ Client.socket.on('allplayers',function(data){
 
         gameMode = true;
         if(id != myId) {
-            setTimeout(function() {console.log(id + ' is the squish!')}, 3000);
+            setTimeout(function() {
+                Game.changeToSquish(id);
+                console.log(id + ' is the squish!');
+            }, 3000);
         } else {
             console.log(id + ' is the squish!')
+            Game.changeToSquish(id);
         }
+        squishId = id;
     });
 
     Client.socket.on('caught', function(data) {
+        Game.changeToOrange(squishId);
         id = data.winner;
         console.log(id + ' caught the squish!');
         gameMode = false;
     });
+
+
+    Client.socket.on('playerMap', function(playerMap) {
+        Game.updatePlayers(playerMap);
+    });
+
 
 
     Client.socket.on('remove',function(id){

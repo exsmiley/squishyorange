@@ -1,5 +1,6 @@
 var myId = null;
 var frameCount = 0;
+var positionCount = 0;
 var Game = {};
 
 Game.moving = [];
@@ -12,8 +13,8 @@ Game.preload = function() {
     game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('tileset', 'assets/map/tilesheet.png',32,32);
     // game.load.image('sprite','assets/sprites/sprite.png');
-    game.load.image('sprite','assets/sprites/orange.png');
-    game.load.image('squish','assets/sprites/squishy.png');
+    game.load.image('orange','assets/sprites/orange.png');
+    game.load.image('squishy','assets/sprites/squishy.png');
     game.load.image('hmm','assets/map/source.gif');
 };
 
@@ -22,19 +23,24 @@ Game.create = function(){
     game.physics.startSystem(Phaser.Physics.P2JS);
     var hmm = game.add.image(0, 0, 'hmm');
     hmm.scale.setTo(0.5,0.5)
-    // var map = game.add.tilemap('map');
     cursors = game.input.keyboard.createCursorKeys();
-    // map.addTilesetImage('tilesheet', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
-    // var layer;
-    // for(var i = 0; i < map.layers.length; i++) {
-    //     layer = map.createLayer(i);
-    // }
 
     Client.askNewPlayer();
 };
 
 Game.update = function(){
     frameCount += 1;
+    positionCount += 1;
+
+    if(positionCount > 50) {
+        var data = {};
+
+        for(var id in Game.playerMap) {
+            data[id] = {x: Game.playerMap[id]['position']['x'], y: Game.playerMap[id]['position']['y']}
+        }
+        Client.socket.emit('playerMap', {players: data, id: myId});
+        positionCount = 0;
+    }
 
     if(myId == null || !Game.playerMap[myId] || frameCount < 3) {
         return;
@@ -82,12 +88,18 @@ Game.update = function(){
 }
 
 Game.addNewPlayer = function(id,x,y){
-    Game.playerMap[id] = game.add.sprite(x,y,'sprite');
+    Game.playerMap[id] = game.add.sprite(x,y,'orange');
     Game.playerMap[id].scale.setTo(0.5,0.5)
     // Game.playerMap[id].body.type = "player_body"
-    
-    
 };
+
+Game.changeToOrange = function(id) {
+    Game.playerMap[id].loadTexture('orange', 0);
+}
+
+Game.changeToSquish = function(id) {
+    Game.playerMap[id].loadTexture('squishy', 0);
+}
 
 Game.nudgePlayer = function(id, direction){
     // console.log()
@@ -119,8 +131,19 @@ Game.nudgePlayer = function(id, direction){
     {
         sprite.body.setZeroVelocity();
     }
-
 };
+
+Game.updatePlayers = function(playerMap) {
+    // console.log('i got here' + JSON.stringify(playerMap))
+    for(var id in playerMap) {
+        // pigArrives = game.add.tween(Game.playerMap[id]);
+        Game.playerMap[id].x = playerMap[id].x;
+        Game.playerMap[id].y = playerMap[id].y;
+        // pigArrives.to({x:playerMap[id].x, y: playerMap[id].y}, 0, Phaser.Easing.Bounce.Out);
+        console.log(Game.playerMap[id].x + ", " + Game.playerMap[id].y + " from " + playerMap[id].x + ", " + playerMap[id].y)
+    }
+    // frameCount = -10
+}
 
 Game.removePlayer = function(id){
     Game.playerMap[id].destroy();

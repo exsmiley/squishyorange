@@ -26,9 +26,11 @@ server.listen(process.env.PORT || 8081,function(){
 // game variables
 var catchSquishMode = true;
 var squishies = [];
+var playersMap = {};
 var scores = {};
 var gameGoing = false;
 var startTime;
+var selectedId = 0;
 
 // socket handler
 io.on('connection',function(socket){
@@ -40,6 +42,7 @@ io.on('connection',function(socket){
             y: randomInt(100,400),
             type: "player_body"
         };
+        playersMap[socket.player.id] = socket.player;
         scores[socket.player.id] = {capture: 0, survival: 0}
         socket.emit('yourId', socket.player.id);
         socket.emit('allplayers',getAllPlayers());
@@ -53,9 +56,25 @@ io.on('connection',function(socket){
             io.emit('movement', {id: socket.player.id, direction: direction})
         })
 
+        socket.on('playerMap', function(data) {
+            if(selectedId == data.id) {
+                // socket.broadcast.emit('playerMap', data.players);
+                for(var id in data.players) {
+                    if(playersMap.hasOwnProperty(id)) {
+                        playersMap[id].x = data.players[id].x
+                        playersMap[id].y = data.players[id].y
+                    }
+                }
+            }
+            var players = getAllPlayers();
+            var squishIndex = randomInt(0, players.length);
+            selectedId = players[squishIndex].id;
+        })
+
         socket.on('disconnect',function(){
             io.emit('remove', socket.player.id);
             delete io.sockets.connected[socket.id];
+            delete playersMap[socket.player.id]
 
             // check if the squish disconnected
             var i = squishies.indexOf(socket.player.id);
@@ -98,12 +117,15 @@ function chooseSquish() {
 }
 
 function getAllPlayers(){
-    var players = [];
-    Object.keys(io.sockets.connected).forEach(function(socketID){
-        var player = io.sockets.connected[socketID].player;
-        if(player) players.push(player);
-    });
-    return players;
+    var playersList = [];
+    // Object.keys(io.sockets.connected).forEach(function(socketID){
+    //     var player = io.sockets.connected[socketID].player;
+    //     if(player) players.push(player);
+    // });
+    for(var id in playersMap) {
+        playersList.push(playersMap[id]);
+    }
+    return playersList;
 }
 
 function randomInt (low, high) {
