@@ -46,9 +46,9 @@ io.on('connection',function(socket){
             x: randomInt(100,400),
             y: randomInt(100,400),
             color: {
-                r: randomInt(50, 255),
-                g: randomInt(50, 255),
-                b: randomInt(50, 255)
+                r: randomInt(120, 255),
+                g: randomInt(90, 255),
+                b: randomInt(90, 255)
             },
             type: "player_body"
         };
@@ -76,6 +76,7 @@ io.on('connection',function(socket){
 
         socket.emit('yourId', socket.player.id);
         socket.emit('allplayers', getAllPlayers(room));
+        socket.emit('mode', rooms[room]['catchSquishMode']);
         io.to(room).emit('scores', rooms[room]['scores']);
         io.to(room).emit('names', rooms[room]['names'])
 

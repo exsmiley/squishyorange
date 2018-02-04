@@ -92,6 +92,14 @@ Client.socket.on('allplayers',function(data){
     Client.socket.on('remove',function(id){
         Game.removePlayer(id);
     });
+
+    Client.socket.on('mode',function(bool){
+        if(bool) {
+            $('#gameMode').html('Catch the Squish');
+        } else {
+            $('#gameMode').html('Squish Zombies');
+        }
+    });
 });
 
 function start() {

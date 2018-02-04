@@ -3,7 +3,7 @@ var frameCount = 0;
 var positionCount = 0;
 var Game = {};
 var room = window.location.href.split('/')[3];
-$('#gameMode').html(room);
+$('#map').html(room[0].toUpperCase() + room.substring(1));
 
 Game.moving = [];
 
@@ -120,11 +120,8 @@ Game.addNewPlayer = function(id,x,y, color){
     var g = color.g;
     var b = color.b;
     var colorString = '0x' + r.toString(16) + g.toString(16) + b.toString(16);
-    console.log(colorString)
-    console.log(parseInt(colorString))
     Game.playerMap[id].tint = parseInt(colorString)
     Game.playerMap[id].scale.setTo(0.5,0.5)
-    // Game.playerMap[id].body.type = "player_body"
 };
 
 Game.changeToOrange = function(id) {
