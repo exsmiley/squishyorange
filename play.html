@@ -17,9 +17,15 @@
                 <div id='game'></div>
             </div>
             <div class='col-lg-3 my-auto'>
-                <h3> Game Mode: <a id='gameMode'></a></h3>
-                <h4> Your ID: <a id='myId'></a></h3>
-
+                <h3> Map: <a id='map'></a></h3>
+                <h4> Game Mode: <a id='gameMode'></a></h3>
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Name</span>
+                  </div>
+                  <input type="text" class="form-control" placeholder="Username" aria-label="" aria-describedby="basic-addon1" id="myId">
+                  <button class="btn btn-primary" onClick='updateName()'>Update Name</button>
+                </div>
                 <div id="startButton">
                     <button class="btn btn-danger btn-lg"  onClick='start()'>Start!</button>
                 </div>
