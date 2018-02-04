@@ -13,8 +13,6 @@ Game.init = function(){
 
 Game.preload = function() {
     game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
-    //game.load.spritesheet('tileset', 'assets/map/tilesheet.png',32,32);
-    // game.load.image('sprite','assets/sprites/sprite.png');
     game.load.image('orange','assets/sprites/orange.png');
     game.load.image('squishy','assets/sprites/squishy.png');
     game.load.image('classic','assets/map/source.gif');
@@ -24,17 +22,24 @@ Game.preload = function() {
     game.load.spritesheet('snow', 'assets/sprites/snow.png', 1400, 1400, 22);
     game.load.spritesheet('rain', 'assets/sprites/rain.png', 1400, 720, 8);
     game.load.spritesheet('tumble', 'assets/sprites/tumble.png', 1400, 200, 11);
+    game.load.image('test', 'assets/map/test.jpg');
       
 };
 
 Game.create = function(){
     Game.playerMap = {};
     game.physics.startSystem(Phaser.Physics.P2JS);
-    var hmm = game.add.image(0, 0, room);
-    hmm.scale.setTo(1,1);
+    if (room=='classic'){
+        game.add.tileSprite(0,0,2048,2048, 'classic');
+        game.world.setBounds(0,0,2048,2048);
+    }
+    else{
+    game.add.tileSprite(0,0,1700, 850, room);
+    game.world.setBounds(0,0,1700,850);
+    }
     cursors = game.input.keyboard.createCursorKeys();
     if(room == 'summer') {
-        var tumble = game.add.image(0,0,'tumble');
+        var tumble = game.add.image(0,50,'tumble');
         var action = tumble.animations.add('tumbling');
         tumble.animations.play('tumbling', 5, true);
     }
@@ -158,6 +163,11 @@ Game.nudgePlayer = function(id, direction){
     {
         sprite.body.setZeroVelocity();
     }
+
+    if(id ==myId) {
+        // camera mvmt
+
+    }
 };
 
 Game.updatePlayers = function(playerMap) {
@@ -177,3 +187,6 @@ Game.removePlayer = function(id){
     delete Game.playerMap[id];
 };
 
+// Game.render = function(){
+//     game.debug.cameraInfo(game.camera, 32, 32);
+// }

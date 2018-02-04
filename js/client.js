@@ -31,6 +31,7 @@ Client.socket.on('allplayers',function(data){
 
         if(data[i].id == myId) {
             sprite.body.onBeginContact.add(player_coll, this); 
+            game.camera.follow(sprite);
         }
     }
 
