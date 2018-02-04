@@ -86,6 +86,7 @@ Client.socket.on('allplayers',function(data){
 
     Client.socket.on('scores', function(scores) {
         Client.scores = scores;
+        refreshScores();
     });
 
     Client.socket.on('names',function(names){
