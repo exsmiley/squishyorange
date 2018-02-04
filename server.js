@@ -61,6 +61,7 @@ io.on('connection',function(socket){
             rooms[room] = {
                 playersMap: {},
                 scores: {},
+                names: {},
                 squishies: [],
                 gameGoing: false,
                 selectedId: socket.player.id,
@@ -71,10 +72,12 @@ io.on('connection',function(socket){
 
         rooms[room]['playersMap'][socket.player.id] = socket.player;
         rooms[room]['scores'][socket.player.id] = {capture: 0, survival: 0}
-        
+        rooms[room]['names'][socket.player.id] = socket.player.id;
+
         socket.emit('yourId', socket.player.id);
         socket.emit('allplayers', getAllPlayers(room));
         io.to(room).emit('scores', rooms[room]['scores']);
+        io.to(room).emit('names', rooms[room]['names'])
 
         // TODO depends on game mode
         if(rooms[room]['squishies'].length > 0) {
@@ -84,7 +87,12 @@ io.on('connection',function(socket){
 
         socket.on('movement', function(direction) {
             io.to(socket.room).emit('movement', {id: socket.player.id, direction: direction})
-        })
+        });
+
+        socket.on('updateName', function(name) {
+            rooms[socket.room]['names'][socket.player.id] = name;
+            io.to(socket.room).emit('names', rooms[socket.room]['names'])
+        });
 
         socket.on('playerMap', function(data) {
             var room = socket.room;
@@ -107,6 +115,10 @@ io.on('connection',function(socket){
             delete io.sockets.connected[socket.id];
             delete rooms[socket.room]['playersMap'][socket.player.id]
             delete rooms[socket.room]['scores'][socket.player.id]
+            delete rooms[socket.room]['names'][socket.player.id]
+
+            io.to(socket.room).emit('scores', rooms[socket.room]['scores']);
+            io.to(socket.room).emit('names', rooms[socket.room]['names'])
 
             // check if the squish disconnected
             var squishies = rooms[socket.room]['squishies'];

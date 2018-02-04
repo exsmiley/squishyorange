@@ -3,13 +3,15 @@ var gameMode = false;
 var squishId = null;
 Client.socket = io.connect();
 
+Client.names = {};
+
 Client.askNewPlayer = function(){
     Client.socket.emit('newplayer', room);
 };
 
 Client.socket.on('yourId',function(id){
     myId = id;
-    $('#myId').html(myId);
+    $('#myId').val(myId);
 });
 
 Client.socket.on('newplayer',function(data){
@@ -53,10 +55,7 @@ Client.socket.on('allplayers',function(data){
         if(id != myId) {
             setTimeout(function() {
                 Game.changeToSquish(id);
-                $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + id + ' is the squish!</div>');
-                setTimeout(function() {
-                    $('#newSquish').remove();
-                }, 2000)
+                $('#warnings').append('<div class="alert alert-warning" role="alert" id="newSquish">' + Client.names[id] + ' is the squish!</div>');
             }, 3000);
         } else {
             $('#warnings').append('<div class="alert alert-danger" role="alert" id="newSquish">You are the squish!</div>');
@@ -69,7 +68,7 @@ Client.socket.on('allplayers',function(data){
         Game.changeToOrange(squishId);
         id = data.winner;
         $('#newSquish').remove();
-        $('#warnings').append('<div class="alert alert-primary" role="alert" id="caught">' + id + ' caught the squish!</div>');
+        $('#warnings').append('<div class="alert alert-primary" role="alert" id="caught">' + Client.names[id] + ' caught the squish!</div>');
         setTimeout(function() {
             $('#caught').remove();
         }, 2000)
@@ -82,19 +81,13 @@ Client.socket.on('allplayers',function(data){
     });
 
     Client.socket.on('scores', function(scores) {
-        var s = '<table class="table table-sm"><thead class="thead-inverse"><tr><th>Id</th><th>Capture</th><th>Survival</th>';
-        s += '</tr></thead><tbody>';
-        for(var id in scores) {
-            s += '<tr><td>' + id + '</td>';
-            s += '<td>' + scores[id]['capture'] + '</td>';
-            s += '<td>' + scores[id]['survival'] + '</td>';
-            s += '</tr>'
-        }
-        s += '</tbody></table>';
-        $('#scores').html(s);
+        Client.scores = scores;
     });
 
-
+    Client.socket.on('names',function(names){
+        Client.names = names;
+        refreshScores();
+    });
 
     Client.socket.on('remove',function(id){
         Game.removePlayer(id);
@@ -104,3 +97,28 @@ Client.socket.on('allplayers',function(data){
 function start() {
     Client.socket.emit('start', {});
 }
+
+function updateName() {
+    Client.socket.emit('updateName', $('#myId').val());
+}
+
+function refreshScores() {
+    var scores = Client.scores;
+    var s = '<table class="table table-sm"><thead class="thead-inverse"><tr><th>Name</th><th>Capture</th><th>Survival</th>';
+    s += '</tr></thead><tbody>';
+    for(var id in scores) {
+        s += '<tr><td>' + Client.names[id] + '</td>';
+        s += '<td>' + scores[id]['capture'] + '</td>';
+        s += '<td>' + scores[id]['survival'] + '</td>';
+        s += '</tr>'
+    }
+    s += '</tbody></table>';
+    $('#scores').html(s);
+}
+
+// press enter
+$(document).keypress(function(e) {
+    if(e.which == 13) {
+        updateName()
+    }
+});
