@@ -45,6 +45,11 @@ io.on('connection',function(socket){
             id: server.lastPlayderID++,
             x: randomInt(100,400),
             y: randomInt(100,400),
+            color: {
+                r: randomInt(50, 255),
+                g: randomInt(50, 255),
+                b: randomInt(50, 255)
+            },
             type: "player_body"
         };
         

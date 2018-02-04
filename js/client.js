@@ -13,7 +13,7 @@ Client.socket.on('yourId',function(id){
 });
 
 Client.socket.on('newplayer',function(data){
-    Game.addNewPlayer(data.id,data.x,data.y);
+    Game.addNewPlayer(data.id,data.x,data.y, data.color);
     sprite = Game.playerMap[data.id];
     game.physics.p2.enable(sprite);
     sprite.body.fixedRotation = true; 
@@ -23,7 +23,7 @@ Client.socket.on('newplayer',function(data){
 
 Client.socket.on('allplayers',function(data){
     for(var i = 0; i < data.length; i++){
-        Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
+        Game.addNewPlayer(data[i].id,data[i].x,data[i].y, data[i].color);
         sprite = Game.playerMap[data[i].id];
         game.physics.p2.enable(sprite);
         sprite.body.fixedRotation = true;

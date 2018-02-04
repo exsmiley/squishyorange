@@ -114,8 +114,15 @@ Game.update = function(){
     frameCount = 0;
 }
 
-Game.addNewPlayer = function(id,x,y){
+Game.addNewPlayer = function(id,x,y, color){
     Game.playerMap[id] = game.add.sprite(x,y,'orange');
+    var r = color.r;
+    var g = color.g;
+    var b = color.b;
+    var colorString = '0x' + r.toString(16) + g.toString(16) + b.toString(16);
+    console.log(colorString)
+    console.log(parseInt(colorString))
+    Game.playerMap[id].tint = parseInt(colorString)
     Game.playerMap[id].scale.setTo(0.5,0.5)
     // Game.playerMap[id].body.type = "player_body"
 };
