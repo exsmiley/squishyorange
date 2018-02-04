@@ -25,6 +25,7 @@ Client.socket.on('newplayer',function(data){
 
 Client.socket.on('allplayers',function(data){
     for(var i = 0; i < data.length; i++){
+        Game.removePlayer(data[i].id);
         Game.addNewPlayer(data[i].id,data[i].x,data[i].y, data[i].color);
         sprite = Game.playerMap[data[i].id];
         game.physics.p2.enable(sprite);

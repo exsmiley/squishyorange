@@ -105,6 +105,7 @@ io.on('connection',function(socket){
                         rooms[room]['playersMap'][id].y = data.players[id].y
                     }
                 }
+                socket.broadcast.to(socket.room).emit('allplayers', getAllPlayers(socket.room));
             }
             var players = getAllPlayers(room);
             var squishIndex = randomInt(0, players.length);
